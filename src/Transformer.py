@@ -57,7 +57,7 @@ class MultiHeadAttention(nn.Module):
         nn.init.normal_(self.W_V.weight, mean=0, std=np.sqrt(2.0 / (d_model + d_v)))
         nn.init.normal_(self.W_out.weight, mean=0, std=np.sqrt(2.0 / (d_model + d_v)))
 
-    def forward(self, Q, K, V, attn_mask):
+    def forward(self, Q, K, V, attn_mask, **kwargs):
         N = Q.size(0)
         q_len, k_len = Q.size(1), K.size(1)
         d_k, d_v = self.d_k, self.d_v
@@ -325,3 +325,4 @@ if __name__ == "__main__":
     # forward check
     logits = transformer(fbank_feature, feat_lens, labels)
     print(logits.shape)  # (batch_size, max_label_len, vocab_size)
+
