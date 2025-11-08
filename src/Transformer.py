@@ -1,7 +1,3 @@
-# coding=utf-8
-# Contact: bingquanxia@qq.com
-
-
 import numpy as np
 import torch
 import torch.nn as nn
@@ -15,18 +11,11 @@ def get_len_mask(b: int, max_len: int, feat_lens: torch.Tensor, device: torch.de
 
 
 def get_subsequent_mask(b: int, max_len: int, device: torch.device) -> torch.Tensor:
-    """
-    Args:
-        b: batch-size.
-        max_len: the length of the whole seqeunce.
-        device: cuda or cpu.
-    """
-    return torch.triu(torch.ones((b, max_len, max_len), device=device), diagonal=1).to(torch.bool)     # or .to(torch.uint8)
+    return torch.triu(torch.ones((b, max_len, max_len), device=device), diagonal=1).to(torch.bool)
 
 
 def get_enc_dec_mask(
-    b: int, max_feat_len: int, feat_lens: torch.Tensor, max_label_len: int, device: torch.device
-) -> torch.Tensor:
+    b: int, max_feat_len: int, feat_lens: torch.Tensor, max_label_len: int, device: torch.device) -> torch.Tensor:
     attn_mask = torch.zeros((b, max_label_len, max_feat_len), device=device)       # (b, seq_q, seq_k)
     for i in range(b):
         attn_mask[i, :, feat_lens[i]:] = 1
@@ -57,7 +46,6 @@ class MultiHeadAttention(nn.Module):
         self.W_out = nn.Linear(d_v * num_heads, d_model)
 
         # Normalization
-        # References: <<Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification>>
         nn.init.normal_(self.W_Q.weight, mean=0, std=np.sqrt(2.0 / (d_model + d_k)))
         nn.init.normal_(self.W_K.weight, mean=0, std=np.sqrt(2.0 / (d_model + d_k)))
         nn.init.normal_(self.W_V.weight, mean=0, std=np.sqrt(2.0 / (d_model + d_v)))
@@ -118,14 +106,6 @@ class PoswiseFFN(nn.Module):
 
 class EncoderLayer(nn.Module):
     def __init__(self, dim, n, dff, dropout_posffn, dropout_attn):
-        """
-        Args:
-            dim: input dimension
-            n: number of attention heads
-            dff: dimention of PosFFN (Positional FeedForward)
-            dropout_posffn: dropout ratio of PosFFN
-            dropout_attn: dropout ratio of attention module
-        """
         assert dim % n == 0
         hdim = dim // n     # dimension of each attention head
         super(EncoderLayer, self).__init__()
@@ -158,17 +138,6 @@ class Encoder(nn.Module):
             self, dropout_emb, dropout_posffn, dropout_attn,
             num_layers, enc_dim, num_heads, dff, tgt_len,
     ):
-        """
-        Args:
-            dropout_emb: dropout ratio of Position Embeddings.
-            dropout_posffn: dropout ratio of PosFFN.
-            dropout_attn: dropout ratio of attention module.
-            num_layers: number of encoder layers
-            enc_dim: input dimension of encoder
-            num_heads: number of attention heads
-            dff: dimensionf of PosFFN
-            tgt_len: the maximum length of sequences
-        """
         super(Encoder, self).__init__()
         # The maximum length of input sequence
         self.tgt_len = tgt_len
@@ -231,20 +200,8 @@ class DecoderLayer(nn.Module):
 class Decoder(nn.Module):
     def __init__(
             self, dropout_emb, dropout_posffn, dropout_attn,
-            num_layers, dec_dim, num_heads, dff, tgt_len, tgt_vocab_size,
+            num_layers, dec_dim, num_heads, dff, tgt_len, tgt_vocab_size
     ):
-        """
-        Args:
-            dropout_emb: dropout ratio of Position Embeddings.
-            dropout_posffn: dropout ratio of PosFFN.
-            dropout_attn: dropout ratio of attention module.
-            num_layers: number of encoder layers
-            dec_dim: input dimension of decoder
-            num_heads: number of attention heads
-            dff: dimensionf of PosFFN
-            tgt_len: the target length to be embedded.
-            tgt_vocab_size: the target vocabulary size.
-        """
         super(Decoder, self).__init__()
 
         # output embedding
@@ -274,7 +231,7 @@ class Decoder(nn.Module):
 class Transformer(nn.Module):
     def __init__(
             self, frontend: nn.Module, encoder: nn.Module, decoder: nn.Module,
-            dec_out_dim: int, vocab: int,
+            dec_out_dim: int, vocab: int
     ) -> None:
         super().__init__()
         self.frontend = frontend     # feature extractor
@@ -332,3 +289,4 @@ if __name__ == "__main__":
     # forward check
     logits = transformer(fbank_feature, feat_lens, labels)
     print(logits.shape)     # (batch_size, max_label_len, vocab_size)
+
