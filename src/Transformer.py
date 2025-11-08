@@ -136,8 +136,7 @@ class EncoderLayer(nn.Module):
 class Encoder(nn.Module):
     def __init__(
             self, dropout_emb, dropout_posffn, dropout_attn,
-            num_layers, enc_dim, num_heads, dff, tgt_len,
-    ):
+            num_layers, enc_dim, num_heads, dff, tgt_len):
         super(Encoder, self).__init__()
         # The maximum length of input sequence
         self.tgt_len = tgt_len
@@ -160,14 +159,6 @@ class Encoder(nn.Module):
     
 class DecoderLayer(nn.Module):
     def __init__(self, dim, n, dff, dropout_posffn, dropout_attn):
-        """
-        Args:
-            dim: input dimension
-            n: number of attention heads
-            dff: dimention of PosFFN (Positional FeedForward)
-            dropout_posffn: dropout ratio of PosFFN
-            dropout_attn: dropout ratio of attention module
-        """
         super(DecoderLayer, self).__init__()
         assert dim % n == 0
         hdim = dim // n
@@ -200,8 +191,7 @@ class DecoderLayer(nn.Module):
 class Decoder(nn.Module):
     def __init__(
             self, dropout_emb, dropout_posffn, dropout_attn,
-            num_layers, dec_dim, num_heads, dff, tgt_len, tgt_vocab_size
-    ):
+            num_layers, dec_dim, num_heads, dff, tgt_len, tgt_vocab_size):
         super(Decoder, self).__init__()
 
         # output embedding
@@ -231,8 +221,7 @@ class Decoder(nn.Module):
 class Transformer(nn.Module):
     def __init__(
             self, frontend: nn.Module, encoder: nn.Module, decoder: nn.Module,
-            dec_out_dim: int, vocab: int
-    ) -> None:
+            dec_out_dim: int, vocab: int) -> None:
         super().__init__()
         self.frontend = frontend     # feature extractor
         self.encoder = encoder
@@ -289,4 +278,5 @@ if __name__ == "__main__":
     # forward check
     logits = transformer(fbank_feature, feat_lens, labels)
     print(logits.shape)     # (batch_size, max_label_len, vocab_size)
+
 
