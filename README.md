@@ -4,6 +4,7 @@
 
 ```
 $ conda create -n transformer python=3.11
-$ pip install torch==2.3.0 --index-url https://download.pytorch.org/whl/cpu
-$ python Transformer.py
+$ conda activate transformer
+$ conda install numpy==1.23.5 pytorch==2.3.0 cpuonly -c pytorch
+$ python src/Transformer.py
 ```
