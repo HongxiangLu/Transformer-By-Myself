@@ -8,3 +8,9 @@ $ conda activate transformer
 $ conda install numpy==1.23.5 pytorch==2.3.0 cpuonly -c pytorch
 $ python src/Transformer.py
 ```
+
+运行程序后，控制台显示输出结果的维度：
+
+```
+torch.Size([16, 100, 26])
+```
